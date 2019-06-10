@@ -86,22 +86,24 @@ import jxl.Workbook;
 public class TestBase {
 	WebDriverWait wait;
 	private final static Logger log = Logger.getLogger(TestBase.class);
-	public  Properties Repository = new Properties();
-	public  File f;
-	public  FileInputStream FI;
+	public Properties Repository = new Properties();
+	public File f;
+	public FileInputStream FI;
 	public static WebDriver driver;
 	public String startTime;
 	public static int indexSI = 1;
 	public static ExtentTest test;
-	 public static ExtentReports report;
+	public static ExtentReports report;
 	public static final String ANSI_RED = "\u001B[31m";
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_BLUE = "\u001B[34m";
 
 	public static final String ANSI_GREEN = "\u001B[32m";
 
-	//public static String loginData = System.getProperty("user.dir") + "//src//main//resources//resources//HotelData.xls";
-	public static String testData = System.getProperty("user.dir") + "//src//main//resources//Resources//TestData//TestData.xls";
+	// public static String loginData = System.getProperty("user.dir") +
+	// "//src//main//resources//resources//HotelData.xls";
+	public static String testData = System.getProperty("user.dir")
+			+ "//src//main//resources//Resources//TestData//TestData.xls";
 	public static String hotelDestinations = System.getProperty("user.dir")
 			+ "//src//main//resources//resources//HotelDestinations.xls";
 	public static String flightsxls = System.getProperty("user.dir")
@@ -170,12 +172,11 @@ public class TestBase {
 		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpathkey)));
 	}
 
-	/*public int getAirlines() {
-		String airlines = driver.findElement(By.xpath("//div[@class='span3 show-count hidden-phone']/strong"))
-				.getText();
-		int value = Integer.parseInt(airlines);
-		return value;
-	}*/
+	/*
+	 * public int getAirlines() { String airlines = driver.findElement(By.
+	 * xpath("//div[@class='span3 show-count hidden-phone']/strong")) .getText();
+	 * int value = Integer.parseInt(airlines); return value; }
+	 */
 
 	public void invisibilityOfElementLocated(int timeout, String xpathkey) {
 		WebDriverWait wait = new WebDriverWait(driver, timeout);
@@ -211,14 +212,14 @@ public class TestBase {
 		});
 	}
 
-	public  void init() throws IOException, InterruptedException {
-//		String log4jConfPath = "log4j.properties";
-//		PropertyConfigurator.configure(log4jConfPath);
-//		loadPropertiesFile();
-		selectBrowser("IE");
-		
-//		Dimension d = new Dimension(1900, 1050);
-//		driver.manage().window().setSize(d);
+	public void init() throws IOException, InterruptedException {
+		// String log4jConfPath = "log4j.properties";
+		// PropertyConfigurator.configure(log4jConfPath);
+		// loadPropertiesFile();
+		selectBrowser("chrome");
+
+		// Dimension d = new Dimension(1900, 1050);
+		// driver.manage().window().setSize(d);
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
 	}
@@ -238,8 +239,7 @@ public class TestBase {
 
 	}
 
-	
-	public  void loadPropertiesFile() throws IOException {
+	public void loadPropertiesFile() throws IOException {
 		f = new File(System.getProperty("user.dir") + "//src//test//java//com//sussex//configs//config.properties");
 		FI = new FileInputStream(f);
 		Repository.load(FI);
@@ -266,57 +266,75 @@ public class TestBase {
 		driver.manage().window().maximize();
 	}
 
-	
-	public  void selectBrowser(String browserName) throws IOException, InterruptedException {
+	public void selectBrowser(String browserName) throws IOException, InterruptedException {
 		String log4jConfPath = "log4j.properties";
 		PropertyConfigurator.configure(log4jConfPath);
 		loadPropertiesFile();
-		if(browserName.equalsIgnoreCase("firefox")) {
-				
-				WebDriverManager.firefoxdriver().setup();
-				FirefoxOptions options = new FirefoxOptions();
-				String strFFBinaryPath = "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe";
-				options.setBinary(strFFBinaryPath);
-				driver = new FirefoxDriver(options);
-			
+		if (browserName.equalsIgnoreCase("firefox")) {
+
+			WebDriverManager.firefoxdriver().setup();
+			FirefoxOptions options = new FirefoxOptions();
+			String strFFBinaryPath = "C:\\Program Files\\Mozilla Firefox\\firefox.exe";
+			options.setBinary(strFFBinaryPath);
+			driver = new FirefoxDriver(options);
 
 			// driver = new FirefoxDriver();
-		} else if (browserName.equalsIgnoreCase("chrome")) 
-		{
+		} else if (browserName.equalsIgnoreCase("chrome")) {
 
-			System.setProperty("webdriver.chrome.driver","C:\\Users\\pk299\\eclipse-workspace1\\T1\\drivers\\chromedriver.exe");
-					DesiredCapabilities ieCapabilities =new DesiredCapabilities();
-					ieCapabilities.setCapability("disable-popup-blocking", true);
+			String path = System.getProperty("user.dir");
+			System.out.println(path);
+			System.setProperty("webdriver.chrome.driver", path + "\\drivers\\chromedriver.exe");
 			ChromeOptions options = new ChromeOptions();
-			options.setExperimentalOption("excludeSwitches", Arrays.asList("disable-popup-blocking"));
-//					ChromeOptions options = new ChromeOptions();
-			options.addArguments("-incognito");
-			options.addArguments("--disable-popup-blocking");
-			options.addArguments("disable-infobars");
-			options.addArguments("--disable-notifications");
-//					options.addArguments("--start-maximized");
-//					options.addArguments("--disable-web-security");
-//					options.addArguments("--no-proxy-server");
-//					ChromeOptions options = new ChromeOptions();  
-//					options.addArguments("--start-maximized");
+
+			DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+			capabilities.setCapability("chrome.switches", Arrays.asList(
+					"--ignore-certificate-errors,--web-security=false,--ssl-protocol=any,--ignore-ssl-errors=true"));
+			capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+			driver = new ChromeDriver(capabilities);
+
+			/*
+			 * DesiredCapabilities cap= new DesiredCapabilities();
+			 * 
+			 * cap.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+			 * cap.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+			 * cap.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true); driver = new
+			 * ChromeDriver(cap);
+			 */
+			// DesiredCapabilities ieCapabilities =new DesiredCapabilities();
+			// ieCapabilities.setCapability("disable-popup-blocking", true);
+			// ChromeOptions options = new ChromeOptions();
+			// options.setExperimentalOption("excludeSwitches",
+			// Arrays.asList("disable-popup-blocking"));
+			//// ChromeOptions options = new ChromeOptions();
+			// options.addArguments("-incognito");
+			// options.addArguments("--disable-popup-blocking");
+			// options.addArguments("disable-infobars");
+			// options.addArguments("--disable-notifications");
+			//// options.addArguments("--start-maximized");
+			// options.addArguments("--disable-web-security");
+			// options.addArguments("--no-proxy-server");
+			// ChromeOptions options = new ChromeOptions();
+			// options.addArguments("--start-maximized");
 			// options.addArguments("--headless", "--disable-gpu",
 			// "--window-size=1920,1200","--ignore-certificate-errors");
-			driver = new ChromeDriver(ieCapabilities);
+			driver = new ChromeDriver();
 
 		} else if (browserName.equalsIgnoreCase("IE")) {
 
 			// if
 			// (Repository.getProperty("siteurl").contains("http://qawebsoa.eu-west-1.elasticbeanstalk.com"))
 			// {
-
-			System.setProperty("webdriver.ie.driver","C:\\Users\\pk299\\eclipse-workspace1\\T1\\drivers\\IEDriverServer.exe");
+			String path = System.getProperty("user.dir");
+			System.out.println(path);
+			System.setProperty("webdriver.ie.driver", path + "\\drivers\\IEDriverServer.exe");
 			DesiredCapabilities capabilities = new DesiredCapabilities();
-//			capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-//			capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+			// capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS,
+			// true);
+			// capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
 			driver = new InternetExplorerDriver(capabilities);
 		}
 		driver.get("https://sussex-dev.t1cloud.com/T1Default/CiAnywhere/Web/SUSSEX-DEV/LogOn/$S1_STAFF?");
-	Thread.sleep(1500);
+		Thread.sleep(1500);
 	}
 
 	private static void until(WebDriver driver, Function<WebDriver, Boolean> waitCondition, Long timeoutInSeconds) {
@@ -458,74 +476,79 @@ public class TestBase {
 		return (tabArray);
 	}
 
-//	@SuppressWarnings("null")
-//	public void embedScreenshotOnFail() {
-//		Scenario scenario = null;
-//		if (scenario.isFailed()) {
-//			final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-//			scenario.embed(screenshot, "C:/Users/Public/Downloads/TestScreenshot/Error.jpg"); // stick it in the report
-//		}
-//		driver.close();
-//	}
-//
-//	public void selectChildren(String numofChild) {
-//		WebElement element = driver.findElement(By.xpath(
-//				".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div/div[2]/select"));
-//		List<WebElement> elements = element.findElements(By.tagName("option"));
-//		for (WebElement options : elements) {
-//			if (options.getText().trim().equals(numofChild)) {
-//				options.click();
-//			}
-//		}
-//
-//	}
-//
-//	public void getAllChildDivs() {
-//
-//	}
-//
-//	/*
-//	 * public void selectSingleChildAge(String childCount, String childAge){ for
-//	 * (int j = 1; j < 4; j++) {
-//	 * 
-//	 * List<WebElement> childBox = driver.findElements(By.xpath(
-//	 * ".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div/div[2]/div/div["
-//	 * +j+"]/select")); int sizeOfDivs = childBox.size(); String conver =
-//	 * String.valueOf(sizeOfDivs); //int conBox = Integer.parseInt(sizeOfDivs); if
-//	 * (conver ==childCount) {
-//	 * 
-//	 * } List<WebElement> selectChildAge =
-//	 * childBox.findElements(By.tagName("option")); for(WebElement options :
-//	 * selectChildAge){ if (options.getText().trim().equals(childAge)) {
-//	 * options.click(); } }
-//	 */
-//	// }
-//	// *[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div/div[2]/div/div
-//	public void getAllChildrenSection(String number) {
-//		WebElement getAllChildCount = driver.findElement(By.xpath(
-//				".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div[2]/div"));
-//
-//		for (int i = 0; i < 4; i++) {
-//			List<WebElement> getChildCount = getAllChildCount.findElements(By.xpath(
-//					".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div[2]/div/div["
-//							+ i + "]"));
-//			for (WebElement options : getChildCount) {
-//				if (options.getText().trim().equals(number)) {
-//					String ages = options.getText();
-//					int actualAge = Integer.parseInt(ages);
-//					int parseNumber = Integer.parseInt(number);
-//					if (parseNumber > 0 && parseNumber < 2) {
-//						getChildCount.get(0).click();
-//					} else if (parseNumber > 1 && parseNumber < 3) {
-//
-//					}
-//				}
-//			}
-//		}
-//	}
+	// @SuppressWarnings("null")
+	// public void embedScreenshotOnFail() {
+	// Scenario scenario = null;
+	// if (scenario.isFailed()) {
+	// final byte[] screenshot = ((TakesScreenshot)
+	// driver).getScreenshotAs(OutputType.BYTES);
+	// scenario.embed(screenshot,
+	// "C:/Users/Public/Downloads/TestScreenshot/Error.jpg"); // stick it in the
+	// report
+	// }
+	// driver.close();
+	// }
+	//
+	// public void selectChildren(String numofChild) {
+	// WebElement element = driver.findElement(By.xpath(
+	// ".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div/div[2]/select"));
+	// List<WebElement> elements = element.findElements(By.tagName("option"));
+	// for (WebElement options : elements) {
+	// if (options.getText().trim().equals(numofChild)) {
+	// options.click();
+	// }
+	// }
+	//
+	// }
+	//
+	// public void getAllChildDivs() {
+	//
+	// }
+	//
+	// /*
+	// * public void selectSingleChildAge(String childCount, String childAge){ for
+	// * (int j = 1; j < 4; j++) {
+	// *
+	// * List<WebElement> childBox = driver.findElements(By.xpath(
+	// *
+	// ".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div/div[2]/div/div["
+	// * +j+"]/select")); int sizeOfDivs = childBox.size(); String conver =
+	// * String.valueOf(sizeOfDivs); //int conBox = Integer.parseInt(sizeOfDivs); if
+	// * (conver ==childCount) {
+	// *
+	// * } List<WebElement> selectChildAge =
+	// * childBox.findElements(By.tagName("option")); for(WebElement options :
+	// * selectChildAge){ if (options.getText().trim().equals(childAge)) {
+	// * options.click(); } }
+	// */
+	// // }
+	// //
+	// *[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[4]/div/div[2]/div/div
+	// public void getAllChildrenSection(String number) {
+	// WebElement getAllChildCount = driver.findElement(By.xpath(
+	// ".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div[2]/div"));
+	//
+	// for (int i = 0; i < 4; i++) {
+	// List<WebElement> getChildCount = getAllChildCount.findElements(By.xpath(
+	// ".//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div[2]/div/div["
+	// + i + "]"));
+	// for (WebElement options : getChildCount) {
+	// if (options.getText().trim().equals(number)) {
+	// String ages = options.getText();
+	// int actualAge = Integer.parseInt(ages);
+	// int parseNumber = Integer.parseInt(number);
+	// if (parseNumber > 0 && parseNumber < 2) {
+	// getChildCount.get(0).click();
+	// } else if (parseNumber > 1 && parseNumber < 3) {
+	//
+	// }
+	// }
+	// }
+	// }
+	// }
 
 	public void getAllDestinations(String destination) throws InterruptedException {
-//		webdriverWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(".//*[@id='seach-box-wrapper']/div[1]/div[8]")));
+		// webdriverWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(".//*[@id='seach-box-wrapper']/div[1]/div[8]")));
 		WebElement popularDest = driver.findElement(By.xpath(".//*[@id='seach-box-wrapper']/div[1]/div[8]"));
 		List<WebElement> allDestinations = popularDest.findElements(By.tagName("a"));
 		for (WebElement getDestination : allDestinations) {
@@ -537,7 +560,7 @@ public class TestBase {
 	}
 
 	public void selectAdultS(String number) throws InterruptedException {
-//		webdriverWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div/div[1]/select")));
+		// webdriverWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div/div[1]/select")));
 		WebElement element = driver.findElement(By.xpath(
 				"//*[@id='seach-box-wrapper']/div[1]/div[10]/div[2]/div[1]/div[1]/div/div/div/div/div[3]/div/div[1]/select"));
 		List<WebElement> elements = element.findElements(By.tagName("option"));
@@ -1522,8 +1545,7 @@ public class TestBase {
 		if (root) {
 			return Logger.getLogger(clas);
 		}
-		PropertyConfigurator
-				.configure(System.getProperty("user.dir") + "//log4j.properties");
+		PropertyConfigurator.configure(System.getProperty("user.dir") + "//log4j.properties");
 		root = true;
 		return Logger.getLogger(clas);
 	}
@@ -1579,17 +1601,17 @@ public class TestBase {
 	public void addCookie(String name, String value) {
 		driver.manage().addCookie(new Cookie(name, value));
 	}
-//      public void addCookiesToBrowser(Set<Cookie> cookies, String domain) {
-//          for (Cookie c : cookies) {
-//              if (c != null) {
-//                  if (c.getDomain().contains(domain)){
-//                      driver.manage().addCookie(
-//                      new Cookie(name, value, domain, path, expiry));
-//                  }
-//              }
-//          }
-//          driver.navigate().refresh();
-//  }
+	// public void addCookiesToBrowser(Set<Cookie> cookies, String domain) {
+	// for (Cookie c : cookies) {
+	// if (c != null) {
+	// if (c.getDomain().contains(domain)){
+	// driver.manage().addCookie(
+	// new Cookie(name, value, domain, path, expiry));
+	// }
+	// }
+	// }
+	// driver.navigate().refresh();
+	// }
 
 	public void deleteCookieNamed(String name) {
 		driver.manage().deleteCookieNamed(name);
